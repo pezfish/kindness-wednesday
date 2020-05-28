@@ -1,56 +1,36 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { graphql } from 'gatsby';
 
 import Layout from '../components/Layout';
+import { IndexTemplate } from '../templates/IndexTemplate';
 
-export const IndexPageTemplate = () => (
-    <div>
-        <h1>Kindness Wednesday</h1>
-    </div>
-);
+const IndexPage = (response) => {
+    const [meta, setMeta] = useState({});
+    const [content, setContent] = useState({});
 
-const IndexPage = ({ data }) => {
-    console.log(data);
+    useEffect(() => {
+        setMeta(response.data.markdownRemark.frontmatter.meta);
+        setContent(response.data.markdownRemark.frontmatter.content);
+    }, response);
 
     return (
-        <Layout>
-            <IndexPageTemplate />
+        <Layout title={meta.title} description={meta.description}>
+            <IndexTemplate data={content} />
         </Layout>
     );
 };
 
 export const pageQuery = graphql`
     query IndexPageTemplate {
-        markdownRemark(frontmatter: { templateKey: { eq: "index-page" } }) {
+        markdownRemark(frontmatter: { templateKey: { eq: "IndexTemplate" } }) {
             frontmatter {
-                title
-                image {
-                    childImageSharp {
-                        fluid(maxWidth: 2048, quality: 100) {
-                            ...GatsbyImageSharpFluid
-                        }
-                    }
-                }
-                heading
-                subheading
-                mainpitch {
+                meta {
                     title
                     description
                 }
-                description
-                intro {
-                    blurbs {
-                        image {
-                            childImageSharp {
-                                fluid(maxWidth: 240, quality: 64) {
-                                    ...GatsbyImageSharpFluid
-                                }
-                            }
-                        }
-                        text
-                    }
+                content {
                     heading
-                    description
+                    text
                 }
             }
         }
